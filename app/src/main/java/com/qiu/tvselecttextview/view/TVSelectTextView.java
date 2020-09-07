@@ -6,11 +6,12 @@ import android.text.Selection;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+
+import com.qiu.tvselecttextview.utils.Tool;
 
 /**
  * Created by qiu on 2020/8/28 10:09.
@@ -55,27 +56,28 @@ public class TVSelectTextView extends AppCompatEditText {
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_LEFT://左
                             if (v.hasFocus() && getText().length() > 0) {
-                                int nextPosition = selectPosition - 1;
-                                if (nextPosition > 0) {
-                                    selectPosition -= 1;
-                                } else {
-                                    selectPosition = getText().length();
+                                try {
+                                    selectPosition = findPreSelectTextPosition(selectPosition);
+                                    selectPosition = findPreStartPosition(selectPosition);
+                                    int nextPosition = findNextSelectTextPosition(selectPosition);
+                                    currText = getText().toString().substring(selectPosition, nextPosition);
+                                    Selection.setSelection(getText(), selectPosition, nextPosition);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                                currText = getText().toString().substring(selectPosition - 1, selectPosition);
-                                Selection.setSelection(getText(), selectPosition - 1, selectPosition);
                                 return true;
                             }
                             break;
                         case KeyEvent.KEYCODE_DPAD_RIGHT://右
                             if (v.hasFocus() && getText().length() > 0) {
-                                int nextPosition = selectPosition + 1;
-                                if (nextPosition < getText().length()) {
-                                    selectPosition += 1;
-                                } else {
-                                    selectPosition = 0;
+                                try {
+                                    int nextPosition = findNextSelectTextPosition(selectPosition);
+                                    currText = getText().toString().substring(selectPosition, nextPosition);
+                                    Selection.setSelection(getText(), selectPosition, nextPosition);
+                                    selectPosition = findNextStartPosition(nextPosition);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                                currText = getText().toString().substring(selectPosition, selectPosition + 1);
-                                Selection.setSelection(getText(), selectPosition, selectPosition + 1);
                                 return true;
                             }
                             break;
@@ -113,6 +115,85 @@ public class TVSelectTextView extends AppCompatEditText {
                 }
             }
         });
+    }
+
+    private int findNextStartPosition(int pos) {
+        if (getText().length() > 0) {
+            if (pos >= getText().length()) {
+                return 0;
+            }
+            String currText = getText().toString().substring(pos, pos + 1);
+            if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                    || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
+                return findNextStartPosition(pos + 1);
+            } else {
+                return pos;
+            }
+        }
+        return 0;
+    }
+
+    private int findNextSelectTextPosition(int pos) {
+        if (getText().length() > 0) {
+            if (pos < getText().length()) {
+                String currText = getText().toString().substring(pos, pos + 1);
+                if (Tool.INSTANCE.isChinese(currText)) {
+                    return pos + 1;
+                } else {
+                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                            || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
+                        return pos;
+                    }
+                }
+            } else {
+                return getText().length();
+            }
+        } else {
+            return 0;
+        }
+        return findNextSelectTextPosition(pos + 1);
+    }
+
+    private int findPreStartPosition(int pos) {
+        if (getText().length() > 0) {
+            if (pos <= 0) {
+                return 0;
+            }
+            String currText = getText().toString().substring(pos - 1, pos);
+            if (Tool.INSTANCE.isChinese(currText)) {
+                return pos - 1;
+            } else {
+                if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                        || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
+                    return pos;
+                } else {
+                    return findPreStartPosition(pos - 1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    private int findPreSelectTextPosition(int pos) {
+        if (getText().length() > 0) {
+            if (pos > 0) {
+                String currText = getText().toString().substring(pos - 1, pos);
+                if (Tool.INSTANCE.isChinese(currText)) {
+                    return pos;
+                } else {
+                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                            || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
+                        return findPreSelectTextPosition(pos - 1);
+                    } else {
+                        return pos;
+                    }
+                }
+            } else {
+                return getText().length();
+            }
+        } else {
+            return 0;
+        }
     }
 
     public void setOnTextSelectListener(OnTextSelectionListener listener) {
