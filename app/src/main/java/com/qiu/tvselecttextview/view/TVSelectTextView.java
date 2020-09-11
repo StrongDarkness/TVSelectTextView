@@ -123,7 +123,7 @@ public class TVSelectTextView extends AppCompatEditText {
                 return 0;
             }
             String currText = getText().toString().substring(pos, pos + 1);
-            if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+            if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".") || currText.equals("？") || currText.equals("?")
                     || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
                 return findNextStartPosition(pos + 1);
             } else {
@@ -140,7 +140,7 @@ public class TVSelectTextView extends AppCompatEditText {
                 if (Tool.INSTANCE.isChinese(currText)) {
                     return pos + 1;
                 } else {
-                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".") || currText.equals("？") || currText.equals("?")
                             || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
                         return pos;
                     }
@@ -163,7 +163,7 @@ public class TVSelectTextView extends AppCompatEditText {
             if (Tool.INSTANCE.isChinese(currText)) {
                 return pos - 1;
             } else {
-                if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".") || currText.equals("？") || currText.equals("?")
                         || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
                     return pos;
                 } else {
@@ -181,7 +181,7 @@ public class TVSelectTextView extends AppCompatEditText {
                 if (Tool.INSTANCE.isChinese(currText)) {
                     return pos;
                 } else {
-                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".")
+                    if (currText.equals(" ") || currText.equals("\n") || currText.equals(",") || currText.equals(".") || currText.equals("？") || currText.equals("?")
                             || currText.equals("，") || currText.equals("。") || currText.equals("！") || currText.equals("!")) {
                         return findPreSelectTextPosition(pos - 1);
                     } else {
